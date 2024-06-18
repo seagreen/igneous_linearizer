@@ -1,0 +1,4 @@
+#/usr/bin/env sh
+
+cargo run example_code/sicp.compound.main.md > example-transpiled.scm
+guile example-transpiled.scm
