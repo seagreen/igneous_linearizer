@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+igneous-linearizer --single './src-vault/Igneous Linearizer imports.md' > ./src/main.rs
+echo "" >> ./src/main.rs # separating newline
+igneous-linearizer ./src-vault/igneous.main.md >> ./src/main.rs
