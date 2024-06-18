@@ -1,0 +1,6 @@
+#/usr/bin/env bash
+
+set -euo pipefail
+
+cargo run ./src_vault/sicp.compound.main.md > main.scm
+guile main.scm

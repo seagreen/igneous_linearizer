@@ -2,9 +2,9 @@
 
 # Source Note
 
-`./src` is traditional plaintext source, and generated from `./src-vault`. To transpile `./src-vault` to `./src`, run:
+`./src` is traditional plaintext source, and generated from `./src_vault`. To transpile `./src_vault` to `./src`, run:
 
 ```
 cargo install --path .
-./transpile-self
+./transpile_self
 ```
