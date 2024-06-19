@@ -2,6 +2,7 @@
 name = "igneous-linearizer"
 version = "0.1.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
 description = """
 Transpile a program in the form of [[wikilinks]] markdown files into a single file.
 Do this by crawling links starting from ROOT_FILE_PATH.
