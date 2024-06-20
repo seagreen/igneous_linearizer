@@ -224,9 +224,9 @@ lorem ipsum
     }
 }
 
-/// Reads in all files transitively referenced by `root_base_name`.
+/// Read in all files transitively referenced by `root_base_name`.
 ///
-/// This is the last input done by the program, after this is processing and output.
+/// This is the only input phase of the program, after this is processing and output.
 pub fn crawl(vault_dir: &Path, root_base_name: &str) -> HashMap<String, Page> {
     let mut visited: HashMap<String, Page> = HashMap::new();
     let mut to_visit: Vec<String> = vec![root_base_name.to_string()];
@@ -270,6 +270,8 @@ impl Hyperstring {
     }
 }
 
+/// If transclusions form a cycle return `Some` and the base filename of one of the pages involved.
+/// Otherwise return `None`.
 pub fn cyclic_transclusion_check(page_map: &HashMap<String, Page>) -> Option<String> {
     let mut node_map: HashMap<String, _> = HashMap::new();
     let mut graph: Graph<&str, ()> = DiGraph::new();
@@ -432,6 +434,19 @@ impl Hyperstring {
     }
 }
 
+/// Topologically sort all pages transitively referenced by the root page.
+///
+/// Invariant: always returns the root page as the first element of the output vector.
+///
+/// Transclusions will have their transitive references included.
+/// So if you transclude some code which itself references other pages,
+/// those pages will appear in the output vector.
+///
+/// The transclusion itself though will not
+/// (assuming it's only used as a transclusion and never linked to).
+/// In that case it's assumed to be a snippet not a standalone code definition.
+/// Therefore it shouldn't appear at the top level of the eventual output file
+/// and thus isn't included at the top level of the output vector here.
 pub fn linearize(page_map: &HashMap<String, Page>, root_base_name: &str) -> Vec<Hyperstring> {
     let all_links: HashSet<String> = page_map
         .values()

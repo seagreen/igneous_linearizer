@@ -5,6 +5,8 @@ title: cyclic_transclusion_check
 
 type:: [[code]]
 
+/// If transclusions form a cycle return `Some` and the base filename of one of the pages involved.
+/// Otherwise return `None`.
 pub fn cyclic_transclusion_check(page_map: &HashMap<String, [[igneous.Page]]>) -> Option<String> {
     let mut node_map: HashMap<String, _> = HashMap::new();
     let mut graph: Graph<&str, ()> = DiGraph::new();

@@ -5,9 +5,9 @@ title: crawl
 
 type:: [[code]]
 
-/// Reads in all files transitively referenced by `root_base_name`.
+/// Read in all files transitively referenced by `root_base_name`.
 ///
-/// This is the last input done by the program, after this is processing and output.
+/// This is the only input phase of the program, after this is processing and output.
 pub fn crawl(vault_dir: &Path, root_base_name: &str) -> HashMap<String, [[igneous.Page]]> {
     let mut visited: HashMap<String, Page> = HashMap::new();
     let mut to_visit: Vec<String> = vec![root_base_name.to_string()];

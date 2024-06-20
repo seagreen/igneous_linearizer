@@ -5,6 +5,19 @@ title: linearize
 
 type:: [[code]]
 
+/// Topologically sort all pages transitively referenced by the root page.
+///
+/// Invariant: always returns the root page as the first element of the output vector.
+///
+/// Transclusions will have their transitive references included.
+/// So if you transclude some code which itself references other pages,
+/// those pages will appear in the output vector.
+///
+/// The transclusion itself though will not
+/// (assuming it's only used as a transclusion and never linked to).
+/// In that case it's assumed to be a snippet not a standalone code definition.
+/// Therefore it shouldn't appear at the top level of the eventual output file
+/// and thus isn't included at the top level of the output vector here.
 pub fn linearize(page_map: &HashMap<String, [[igneous.Page]]>, root_base_name: &str) -> Vec<[[igneous.Hyperstring]]> {
     let all_links: HashSet<String> = page_map
         .values()
