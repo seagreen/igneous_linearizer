@@ -186,7 +186,7 @@ mod parse_hyperstring_tests {
     }
 }
 
-/// Parse a single page, consisting of YAML frontmatter, Dataview attributes, and a hyperstring.
+/// Parse a single page consisting of YAML frontmatter, Dataview attributes, and a hyperstring.
 ///
 /// The frontmatter and Dataview attributes are optional.
 ///
@@ -417,7 +417,6 @@ impl fmt::Display for HyperstringSegment {
 }
 
 // Also grab the Igneous Linearizer snippets
-
 impl Hyperstring {
     pub fn links(&self) -> Vec<String> {
         self.0
