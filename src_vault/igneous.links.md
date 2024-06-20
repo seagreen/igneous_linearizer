@@ -6,7 +6,6 @@ title: links
 type:: [[code]]
 
 // Also grab the [[Igneous Linearizer snippets]]
-
 impl [[igneous.Hyperstring]] {
     pub fn links(&self) -> Vec<String> {
         self.0

@@ -224,19 +224,6 @@ lorem ipsum
     }
 }
 
-impl Hyperstring {
-    pub fn references(&self) -> Vec<String> {
-        self.0
-            .iter()
-            .filter_map(|segment| match segment {
-                HyperstringSegment::Link(link) => Some(link.clone()),
-                HyperstringSegment::Transclusion(transclusion) => Some(transclusion.clone()),
-                _ => None,
-            })
-            .collect()
-    }
-}
-
 /// Reads in all files transitively referenced by `root_base_name`.
 ///
 /// This is the last input done by the program, after this is processing and output.
@@ -432,18 +419,38 @@ impl Hyperstring {
     }
 }
 
+impl Hyperstring {
+    pub fn references(&self) -> Vec<String> {
+        self.0
+            .iter()
+            .filter_map(|segment| match segment {
+                HyperstringSegment::Link(link) => Some(link.clone()),
+                HyperstringSegment::Transclusion(transclusion) => Some(transclusion.clone()),
+                _ => None,
+            })
+            .collect()
+    }
+}
+
 pub fn linearize(page_map: &HashMap<String, Page>, root_base_name: &str) -> Vec<Hyperstring> {
+    let all_links: HashSet<String> = page_map
+        .values()
+        .flat_map(|page| page.hyperstring.links())
+        .collect();
+
     let mut result = Vec::new();
     let mut seen_set: HashSet<String> = HashSet::new();
     let mut stack = vec![root_base_name.to_string()];
 
     while let Some(base_name) = stack.pop() {
         let page = page_map.get(&base_name).unwrap();
-        result.push(page.hyperstring.clone());
-        for link in page.hyperstring.links() {
-            if !seen_set.contains(&link) {
-                stack.push(link.clone());
-                seen_set.insert(link.clone());
+        if base_name == root_base_name || all_links.contains(&base_name) {
+            result.push(page.hyperstring.clone());
+        }
+        for reference in page.hyperstring.references() {
+            if !seen_set.contains(&reference) {
+                stack.push(reference.clone());
+                seen_set.insert(reference.clone());
             }
         }
     }
