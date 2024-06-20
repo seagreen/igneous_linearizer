@@ -16,10 +16,18 @@ struct Args {
     #[arg(value_name = "ROOT_FILE_PATH")]
     root_file: PathBuf,
 
-    #[arg(long, help = "Only transpile ROOT_FILE_PATH")]
+    #[arg(
+        long,
+        help = concat!(
+            "Only transpile ROOT_FILE_PATH, don't crawl its dependencies and include them in the output as well.",
+            " Useful for compiling import blocks that must be at the start of a file,",
+            " e.g. `igneous-linearizer --single import.md > main.rs; igneous-linearierizer main.md >> main.rs"
+        )
+    )]
     single: bool,
 }
 
+/// Parses frontmatter if present. Returns it and the non-frontmatter remainder of the input.
 pub fn parse_frontmatter(file_content: &str) -> (HashMap<String, gray_matter::Pod>, String) {
     let matter = Matter::<gray_matter::engine::YAML>::new();
     let result = matter.parse(file_content);
@@ -57,6 +65,7 @@ lorem ipsum
     }
 }
 
+/// Strips a block of Dataview attributes if present. Returns the non-Dataview remainder of the input.
 pub fn strip_dataview_block(input: &str) -> String {
     let pattern = r"^\n*([^\s:]+::.*\n)+\n*";
     let re = Regex::new(pattern).unwrap();
@@ -177,6 +186,12 @@ mod parse_hyperstring_tests {
     }
 }
 
+/// Parse a single page, consisting of YAML frontmatter, Dataview attributes, and a hyperstring.
+///
+/// The frontmatter and Dataview attributes are optional.
+///
+/// Dataview attributes looks like `key:: value`.
+/// This section will eventually go away as Obsidian's frontmatter support matures.
 pub fn parse_page(input: &str) -> (HashMap<String, gray_matter::Pod>, Hyperstring) {
     let (frontmatter, content_without_frontmatter) = parse_frontmatter(input);
     let final_content = strip_dataview_block(&content_without_frontmatter);
@@ -222,6 +237,9 @@ impl Hyperstring {
     }
 }
 
+/// Reads in all files transitively referenced by `root_base_name`.
+///
+/// This is the last input done by the program, after this is processing and output.
 pub fn crawl(vault_dir: &Path, root_base_name: &str) -> HashMap<String, Page> {
     let mut visited: HashMap<String, Page> = HashMap::new();
     let mut to_visit: Vec<String> = vec![root_base_name.to_string()];
@@ -434,12 +452,6 @@ pub fn linearize(page_map: &HashMap<String, Page>, root_base_name: &str) -> Vec<
     result
 }
 
-// 4 possible types of links:
-//
-// 1. plain link: add it to the serialization file and recursively crawl it
-// 2. transclusion: just recursively crawl it
-// 3. [not yet implemented] plain link in the 'ignore' list: read it (to find its 'title')
-// 4. [not yet implemented] transclusion in the 'ignore' list: read it (to find its 'title')
 pub fn transform(page_map: &HashMap<String, Page>, root_base_name: &str) -> Vec<Hyperstring> {
     if let Some(cycle) = cyclic_transclusion_check(page_map) {
         panic!("Cyclic transclusion detected: {:?}", cycle);

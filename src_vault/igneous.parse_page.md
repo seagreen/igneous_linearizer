@@ -5,6 +5,12 @@ title: parse_page
 
 type:: [[code]]
 
+/// Parse a single page consisting of YAML frontmatter, Dataview attributes, and a hyperstring.
+///
+/// The frontmatter and Dataview attributes are optional.
+///
+/// Dataview attributes looks like `key:: value`.
+/// This section will eventually go away as Obsidian's frontmatter support matures.
 pub fn parse_page(input: &str) -> (HashMap<String, gray_matter::Pod>, [[igneous.Hyperstring]]) {
     let (frontmatter, content_without_frontmatter) = [[igneous.parse_frontmatter]](input);
     let final_content = [[igneous.strip_dataview_block]](&content_without_frontmatter);

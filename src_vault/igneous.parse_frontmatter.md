@@ -5,6 +5,7 @@ title: parse_frontmatter
 
 type:: [[code]]
 
+/// Parses frontmatter if present. Returns it and the non-frontmatter remainder of the input.
 pub fn parse_frontmatter(file_content: &str) -> (HashMap<String, gray_matter::Pod>, String) {
     let matter = Matter::<gray_matter::engine::YAML>::new();
     let result = matter.parse(file_content);

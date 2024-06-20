@@ -5,6 +5,7 @@ title: strip_dataview_block
 
 type:: [[code]]
 
+/// Strips a block of Dataview attributes if present. Returns the non-Dataview remainder of the input.
 pub fn strip_dataview_block(input: &str) -> String {
     let pattern = r"^\n*([^\s:]+::.*\n)+\n*";
     let re = Regex::new(pattern).unwrap();
